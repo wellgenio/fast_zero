@@ -8,11 +8,14 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "fastapi (>=0.115.12,<0.116.0)"
+    "fastapi (>=0.115.12,<0.116.0)",
+    "sqlalchemy (>=2.0.41,<3.0.0)",
+    "pydantic-settings (>=2.9.1,<3.0.0)",
+    "alembic (>=1.16.1,<2.0.0)"
 ]
 
 [tool.poetry]
-packages = [{include = "fast_zero", from = "src"}]
+packages = [{ include = "fast_zero", from = "src" }]
 
 
 [tool.poetry.group.dev.dependencies]
@@ -34,7 +37,7 @@ pythonpath = "."
 addopts = "-p no:warnings"
 
 [tool.taskipy.tasks]
-run = "fastapi dev src/fast_zero/app.py"
+run = "fastapi dev src/fast_zero/app.py --host 0.0.0.0"
 
 pre_test = "task lint"
 test = "PYTHONPATH=src pytest --cov=src/fast_zero"
