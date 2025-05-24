@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+from fast_zero.schemas import UserPublicSchema
+
 
 def test_read_root_should_return_hello_world(client):
     response = client.get("/")
@@ -24,18 +26,44 @@ def test_create_user_should_return_user_with_id(client):
     assert response.json()["email"] == "testuser@example.com"
 
 
-def test_read_users_should_return_list_of_users(client):
+def test_create_user_should_return_409_if_username_exists(client, user):
+    response = client.post(
+        "/users/",
+        json={
+            "username": user.username,
+            "email": "teste@gmail.com",
+            "password": "password",
+        },
+    )
+
+    assert response.status_code == HTTPStatus.CONFLICT
+    assert response.json()["detail"] == "Username already exists"
+
+
+def test_create_user_should_return_409_if_email_exists(client, user):
+    response = client.post(
+        "/users/",
+        json={
+            "username": "newuser",
+            "email": user.email,
+            "password": "password",
+        },
+    )
+
+    assert response.status_code == HTTPStatus.CONFLICT
+    assert response.json()["detail"] == "Email already exists"
+
+
+def test_read_users_should_return_list_of_users(client, user):
+    user_schema = UserPublicSchema.model_validate(user).model_dump()
+
     response = client.get("/users/")
 
     assert response.status_code == HTTPStatus.OK
-    assert isinstance(response.json()["users"], list)
-    assert len(response.json()["users"]) > 0
-    assert "id" in response.json()["users"][0]
-    assert response.json()["users"][0]["username"] == "testuser"
-    assert response.json()["users"][0]["email"] == "testuser@example.com"
+    assert response.json() == {"users": [user_schema]}
 
 
-def test_update_user_should_return_updated_user(client):
+def test_update_user_should_return_updated_user(client, user):
     response = client.put(
         "/users/1",
         json={
@@ -65,7 +93,7 @@ def test_update_user_should_return_404_if_user_not_found(client):
     assert response.json()["detail"] == "User not found"
 
 
-def test_delete_user_should_return_204_if_user_exists(client):
+def test_delete_user_should_return_204_if_user_exists(client, user):
     response = client.delete("/users/1")
 
     assert response.status_code == HTTPStatus.NO_CONTENT
