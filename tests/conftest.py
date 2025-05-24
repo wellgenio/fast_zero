@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from fast_zero.app import app
 from fast_zero.database import get_session
 from fast_zero.models import User, table_registry
+from fast_zero.scurity import get_password_hash
 from fast_zero.settings import Settings
 
 
@@ -43,11 +44,26 @@ def user(session):
     user_fake = User(
         username="testuser",
         email="testuser@example.com",
-        password="password",
+        password=get_password_hash("password"),
     )
+
+    user_fake.clean_password = "password"
 
     session.add(user_fake)
     session.commit()
     session.refresh(user_fake)
 
     return user_fake
+
+
+@pytest.fixture
+def token(client, user):
+    response = client.post(
+        "/token",
+        data={
+            "username": user.email,
+            "password": user.clean_password,
+        },
+    )
+
+    return response.json()["access_token"]

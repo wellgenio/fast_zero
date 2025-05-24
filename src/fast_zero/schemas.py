@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
-class Message(BaseModel):
+class MessageSchema(BaseModel):
     message: str
 
 
@@ -9,10 +9,6 @@ class UserSchema(BaseModel):
     username: str
     email: EmailStr
     password: str
-
-
-class UserDB(UserSchema):
-    id: int
 
 
 class UserPublicSchema(BaseModel):
@@ -26,3 +22,8 @@ class UserPublicSchema(BaseModel):
 
 class UserListSchema(BaseModel):
     users: list[UserPublicSchema]
+
+
+class TokenSchema(BaseModel):
+    access_token: str
+    token_type: str
