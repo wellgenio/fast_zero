@@ -16,14 +16,12 @@ from fast_zero.scurity import (
 )
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 TSession = Annotated[Session, Depends(get_session)]
 
 
 @router.post("/token", response_model=TokenSchema)
-def login(
-    session: TSession,
-    form_data: OAuth2PasswordRequestForm = Depends(),
-):
+def login(session: TSession, form_data: OAuth2Form):
     db_user = session.scalar(
         select(User).where(User.email == form_data.username),
     )
