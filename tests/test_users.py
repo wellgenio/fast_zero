@@ -77,10 +77,11 @@ def test_update_user_should_return_updated_user(client, user, token):
 
 def test_update_user_should_return_404_if_user_not_is_current_user(
     client,
+    other_user,
     token,
 ):
     response = client.put(
-        "/users/2",
+        f"/users/{other_user.id}",
         headers={"Authorization": f"Bearer {token}"},
         json={
             "username": "updateduser",
@@ -104,10 +105,11 @@ def test_delete_user_should_return_204_if_user_exists(client, user, token):
 
 def test_delete_user_should_return_404_if_user_not_is_current_user(
     client,
+    other_user,
     token,
 ):
     response = client.delete(
-        "/users/2",
+        f"/users/{other_user.id}",
         headers={"Authorization": f"Bearer {token}"},
     )
 

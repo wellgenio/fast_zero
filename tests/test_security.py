@@ -1,7 +1,12 @@
+from http import HTTPStatus
+
+import pytest
+from fastapi import HTTPException
 from jwt import decode
 
 from fast_zero.scurity import (
     create_access_token,
+    get_current_user,
     get_password_hash,
     verify_password,
 )
@@ -34,3 +39,52 @@ def test_create_access_token_should_return_jwt_token():
     assert token is not None
     assert result["sub"] == data["sub"]
     assert result["exp"] is not None
+
+
+def test_get_current_user_decode_error():
+    fake_session = None
+
+    invalid_token = "invalid.jwt.token"
+
+    with pytest.raises(HTTPException) as exc_info:
+        get_current_user(
+            session=fake_session,
+            token=invalid_token,
+        )
+    assert exc_info.value.status_code == HTTPStatus.UNAUTHORIZED
+    assert exc_info.value.detail == "Could not validate credentials"
+
+
+def test_get_current_user_without_username_in_token():
+    data = {}
+    token = create_access_token(data)
+
+    fake_session = None
+
+    with pytest.raises(HTTPException) as exc_info:
+        get_current_user(
+            session=fake_session,
+            token=token,
+        )
+    assert exc_info.value.status_code == HTTPStatus.UNAUTHORIZED
+    assert exc_info.value.detail == "Could not validate credentials"
+
+
+def test_get_current_user_user_not_found():
+    data = {"sub": "notfound@example.com"}
+    token = create_access_token(data)
+
+    class FakeSession:
+        @staticmethod
+        def scalar(*args, **kwargs):
+            return None
+
+    fake_session = FakeSession()
+
+    with pytest.raises(HTTPException) as exc_info:
+        get_current_user(
+            session=fake_session,
+            token=token,
+        )
+    assert exc_info.value.status_code == HTTPStatus.UNAUTHORIZED
+    assert exc_info.value.detail == "Could not validate credentials"

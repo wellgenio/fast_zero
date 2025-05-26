@@ -26,6 +26,8 @@ ruff = "^0.11.11"
 pytest = "^8.3.5"
 pytest-cov = "^6.1.1"
 taskipy = "^1.14.1"
+factory-boy = "^3.3.3"
+freezegun = "^1.5.2"
 
 [tool.ruff]
 line-length = 79
@@ -44,6 +46,7 @@ run = "fastapi dev src/fast_zero/app.py --host 0.0.0.0"
 
 pre_test = "task lint"
 test = "PYTHONPATH=src pytest --cov=src/fast_zero"
+test_html = "PYTHONPATH=src pytest --cov=src/fast_zero --cov-report=html:coverage_html_report"
 
 lint = "ruff check . && ruff check . --diff"
 format = "ruff check . --fix && ruff format ."
