@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from fast_zero.database import get_session
 from fast_zero.models import User
 from fast_zero.schemas import UserListSchema, UserPublicSchema, UserSchema
-from fast_zero.scurity import get_current_user, get_password_hash
+from fast_zero.security import get_current_user, get_password_hash
 
 router = APIRouter(prefix="/users", tags=["users"])
 TSession = Annotated[Session, Depends(get_session)]
