@@ -4,7 +4,7 @@ import pytest
 from fastapi import HTTPException
 from jwt import decode
 
-from fast_zero.scurity import (
+from fast_zero.security import (
     create_access_token,
     get_current_user,
     get_password_hash,

@@ -14,7 +14,7 @@ from fast_zero.schemas import (
     TodoPublicSchema,
     TodoSchema,
 )
-from fast_zero.scurity import get_current_user
+from fast_zero.security import get_current_user
 
 router = APIRouter(prefix="/todos", tags=["todos"])
 TSession = Annotated[Session, Depends(get_session)]
